@@ -6,7 +6,7 @@ const { validate, ValidationError, Joi } = require('express-validation');
 const app = express();
 
 var corsOptions = {
-  origin: ["http://localhost:8080", "http://localhost:3000", "https://gallar12d.github.io/"]
+  origin: ["http://localhost:8080", "http://localhost:3000", "https://gallar12d.github.io"]
 };
 
 app.use(cors(corsOptions));
