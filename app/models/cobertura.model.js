@@ -13,7 +13,7 @@ module.exports = mongoose => {
         type: String,
         required: false,
       },
-      Latitud: {
+      latitud: {
         type: String,
         required: false,
       },

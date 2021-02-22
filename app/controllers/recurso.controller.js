@@ -2,15 +2,11 @@ const db = require("../models");
 const Recurso = db.recursos;
 const Cobertura = db.coberturas;
 
-// Create and Save a new Tutorial
 exports.create = async (req, res) => {
-  // Validate request
   if (!req.body.titulo) {
     res.status(400).send({ message: "No puede ser vacío!" });
     return;
   }
-  // console.log(req.body)
-  // return false;
 
   const coberturas = new Cobertura({
     fecha_inicial: req.body.fecha_inicial,
@@ -35,12 +31,10 @@ exports.create = async (req, res) => {
 
     res.send(new_recurso);
   } catch (error) {
-    console.log(error);
-    // return handleError(error);
+    res.send(error);
   }
 };
 
-// Retrieve all Tutorials from the database.
 exports.findAll = async (req, res) => {
   const title = req.query.title;
   var condition = title
@@ -49,33 +43,32 @@ exports.findAll = async (req, res) => {
 
   try {
     let response = await Recurso.find(condition).populate("cobertura");
-    // let ResponseCobertura = await Recurso.find(condition);
     res.send(response);
   } catch (error) {
     res.send(error);
   }
 };
 
-// Find a single Tutorial with an id
 exports.findOne = async (req, res) => {
   const id = req.params.id;
   try {
     const data = await Recurso.findById(id).populate("cobertura");
     if (!data)
-      res.status(404).send({ message: "Not found Tutorial with id " + id });
+      res
+        .status(404)
+        .send({
+          message: "No se ha podido encontrar el recurso con id: " + id,
+        });
     else res.send(data);
   } catch (error) {
-    res
-      .status(500)
-      .send({ message: "Error retrieving Tutorial with id=" + id });
+    res.status(500).send(error);
   }
 };
 
-// Update a Tutorial by the id in the request
 exports.update = async (req, res) => {
   if (!req.body) {
     return res.status(400).send({
-      message: "Data to update can not be empty!",
+      message: "Por favor ingrese información",
     });
   }
 
@@ -116,7 +109,7 @@ exports.update = async (req, res) => {
     );
     if (!data2) {
       res.status(404).send({
-        message: `Cannot update Tutorial with id=${id}. Maybe Tutorial was not found!`,
+        message: `No se puede actualizar`,
       });
     } else res.send(data2);
   } catch (error) {
@@ -124,18 +117,19 @@ exports.update = async (req, res) => {
   }
 };
 
-// Delete a Tutorial with the specified id in the request
 exports.delete = async (req, res) => {
   const id = req.params.id;
   try {
     const recurso_delete = await Recurso.findByIdAndRemove(id, {
       useFindAndModify: false,
     });
-    const cobertura_delete = await Cobertura.findByIdAndRemove(recurso_delete.cobertura, {
-      useFindAndModify: false,
-    });
-    
-    
+    const cobertura_delete = await Cobertura.findByIdAndRemove(
+      recurso_delete.cobertura,
+      {
+        useFindAndModify: false,
+      }
+    );
+
     res.send(recurso_delete);
   } catch (error) {
     res.status(500).send(error);

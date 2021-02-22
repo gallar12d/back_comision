@@ -6,16 +6,11 @@ const { validate, ValidationError, Joi } = require('express-validation');
 const app = express();
 
 var corsOptions = {
-  origin: "http://localhost:8080"
+  origin: ["http://localhost:8080", "http://localhost:3000", "https://gallar12d.github.io/front_comision/"]
 };
 
 app.use(cors(corsOptions));
-
-
-// parse requests of content-type - application/json
 app.use(bodyParser.json());
-
-// parse requests of content-type - application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: true }));
 
 const db = require("./app/models");
@@ -25,20 +20,19 @@ db.mongoose
     useUnifiedTopology: true
   })
   .then(() => {
-    console.log("Connected to the database!");
+    console.log("Conectado a la base de datos!");
   })
   .catch(err => {
-    console.log("Cannot connect to the database!", err);
+    console.log("No se puede conectar a la base de datos!", err);
     process.exit();
   });
 
-// simple route
 app.get("/", (req, res) => {
-  res.json({ message: "Welcome to bezkoder application." });
+  res.json({ message: "Api para recursos" });
 });
 
-require("./app/routes/turorial.routes")(app);
 require("./app/routes/recurso.routes")(app);
+require('./app/routes/auth.routes')(app);
 
 app.use(function(err, req, res, next) {
   if (err instanceof ValidationError) {
@@ -48,8 +42,6 @@ app.use(function(err, req, res, next) {
   return res.status(500).json(err)
 })
 
-
-// set port, listen for requests
 const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}.`);

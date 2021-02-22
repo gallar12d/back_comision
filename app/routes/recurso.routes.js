@@ -1,5 +1,7 @@
 module.exports = (app) => {
   const recursos = require("../controllers/recurso.controller.js");
+const { authJwt } = require("../middlewares");
+
   const { validate, ValidationError, Joi } = require("express-validation");
 
   var router = require("express").Router();
@@ -21,21 +23,14 @@ module.exports = (app) => {
 
   router.post("/", validate(validation, {}, {}), recursos.create);
 
-  router.get("/", recursos.findAll);
+  router.get("/", [authJwt.verifyToken], recursos.findAll);
 
-  // router.get("/published", recursos.findAllPublished);
+  router.get("/:id", [authJwt.verifyToken], recursos.findOne);
 
-  // Retrieve a single Tutorial with id
-  router.get("/:id", recursos.findOne);
+  router.put("/:id", [authJwt.verifyToken], validate(validation, {}, {}), recursos.update);
 
-  // // Update a Tutorial with id
-  router.put("/:id", validate(validation, {}, {}), recursos.update);
+  router.delete("/:id", [authJwt.verifyToken], recursos.delete);
 
-  // Delete a Tutorial with id
-  router.delete("/:id", recursos.delete);
-
-  // // Create a new Tutorial
-  // router.delete("/", recursos.deleteAll);
 
   app.use("/api/recursos", router);
 };
